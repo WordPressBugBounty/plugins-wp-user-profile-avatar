@@ -50,7 +50,7 @@ class WPUPA_Shortcodes {
 
         ob_start();
 
-        include_once WPUPA_PLUGIN_DIR . '/includes/wp-author-box-display.php';
+            include_once WPUPA_PLUGIN_DIR . '/templates/wp-author-box-display.php';
 
         return ob_get_clean();
     }
@@ -71,7 +71,7 @@ class WPUPA_Shortcodes {
 
         ob_start();
 
-        include_once WPUPA_PLUGIN_DIR . '/templates/wp-author-box-social-info.php';
+        include_once WPUPA_PLUGIN_DIR . '/includes/wp-author-box-social-info.php';
 
         return ob_get_clean();
     }
@@ -312,7 +312,7 @@ class WPUPA_Shortcodes {
 
         $user_id = !empty( $user_id ) ? esc_attr( $user_id ) : $current_user_id;
         $size = !empty( $atts['size'] ) ? sanitize_text_field( $atts['size'] ) : sanitize_text_field( $admin_avatar_size );
-        $align = sanitize_text_field( $atts['align'] );
+        $align = isset( $atts['align'] ) ? sanitize_text_field( $atts['align'] ) : 'left';
         $link =  !empty($atts['link']) ? sanitize_text_field($atts['link']) : '#' ;
         $target = !empty($atts['target']) ? sanitize_text_field($atts['target']) : '_self';
 		$url = !empty($atts['url']) ?  sanitize_text_field($atts['url'])  : '';
@@ -662,12 +662,14 @@ class WPUPA_Shortcodes {
             }
         } else {
             if ( is_email( $id_or_email )) {
+                if ( is_object( $screen ) && property_exists( $screen, 'base' ) ) {
                 if($screen->base !== 'options-discussion' && ($screen->base !== 'admin.php' && isset($_GET['page']) && $_GET['page'] !== 'wp-user-profile-avatar')){
                     $user = get_user_by( 'email', $id_or_email );
                     if ( $user ) {
                         $user_id = $user->ID;
                     }
                 }
+            }
             } else {
                 $user_id = $id_or_email;
             }
